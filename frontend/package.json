@@ -40,6 +40,7 @@
     "react-toastify": "^10.0.5",
     "remark-gfm": "^4.0.0",
     "slick-carousel": "^1.8.1",
+    "socket.io-client": "^4.8.1",
     "styled-components": "^6.1.12",
     "three": "^0.165.0",
     "three-stdlib": "^2.30.3",
@@ -72,6 +73,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@mui/material": "^5.0.0",
+    "@types/socket.io-client": "^1.4.36",
     "@types/three": "^0.165.0",
     "customize-cra": "^1.0.0",
     "firebase": "^9.0.0",

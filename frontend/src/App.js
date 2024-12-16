@@ -9,6 +9,7 @@ import VoiceAsist from './components/AI voice/VoiceAsist';
 import ItemList from './services/ItemList';
 import ProtectedRoute from './ProtectedRoute';
 import UserProfilePage from './components/User-data/UserProfilePage';
+import DocumentGenerator from './components/DocGen/DocumentGenerator';
 
 // Function to get the current user session
 const getCurrentUser = () => {
@@ -41,6 +42,12 @@ function App() {
                         <UserProfilePage />
                     </ProtectedRoute>
                 } />
+                {/* Add the Document Generator route */}
+                <Route path="/docgen" element={
+                    <ProtectedRoute isAuthenticated={isAuthenticated}>
+                        <DocumentGenerator />
+                    </ProtectedRoute>
+                } />
                 {/* Redirect to login if the user is not authenticated */}
                 <Route path="*" element={<Navigate to="/login" />} />
             </Routes>
@@ -49,3 +56,4 @@ function App() {
 }
 
 export default App;
+

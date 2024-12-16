@@ -65,7 +65,7 @@ const Main = () => {
       }
     });
 
-    return () => unsubscribe(); // Cleanup subscription on unmount
+    return () => unsubscribe(); 
   }, []);
 
   const logOut = () => {

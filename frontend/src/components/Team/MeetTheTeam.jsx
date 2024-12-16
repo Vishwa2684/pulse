@@ -15,17 +15,17 @@ const MeetTheTeam = () => {
       role: "Full-stack Developer The mastermind behind Pulse AI, Pranay is a full-stack developer with a love for learning and innovation.",
     },
     {
-      name: "Rajesh Korlapati",
+      name: "Charan Pagadala",
       img: dev2,
       role: "Frontend ReactJs Developer Helps to build a robust and scalable platform",
     },
+    // {
+    //   name: "TARIK ALI",
+    //   img: dev3,
+    //   role: "Backend Expert Excels at solving complex problems and streamlining data management.",
+    // },
     {
-      name: "TARIK ALI",
-      img: dev3,
-      role: "Backend Expert Excels at solving complex problems and streamlining data management.",
-    },
-    {
-      name: "Vishwa",
+      name: "Vishnu Tej",
       img: dev4,
       role: "Full-stack Developer Ensures that Pulse AI delivers a seamless user experience.",
     },

@@ -60,7 +60,7 @@ def take_command(request):
     return JsonResponse({'query': query.lower()})
 
 def get_weather(request, location):
-    url = f"https://www.weather.com/en-IN/weather/today/l/{location}"
+    url = f"https://www.weather.com/en-IN/weather/+today/l/{location}"
     headers = {"User-Agent": "Mozilla/5.0"}
     page = requests.get(url, headers=headers)
     soup = BeautifulSoup(page.content, 'html.parser')

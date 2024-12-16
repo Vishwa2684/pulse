@@ -1,76 +1,90 @@
-import React, { useEffect, useRef } from 'react';
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import React, { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { ARButton } from "three/examples/jsm/webxr/ARButton";
+import io from "socket.io-client";
 
+interface Model {
+  model_file: string;
+}
 
-import modelPath from '../../assets/realistic room.obj'; 
+interface AIResponse {
+  aiResponse: string;
+}
 
-const Voice: React.FC = () => {
-    const containerRef = useRef<HTMLDivElement>(null);
+const ARVisualizer = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [models, setModels] = useState<Model[]>([]);
+  const [aiResponse, setAiResponse] = useState<string>("");
 
-    useEffect(() => {
-        if (!containerRef.current) return;
+  useEffect(() => {
+    const socket = io("http://localhost:8000");
 
-        const container = containerRef.current;
+    socket.on("modelUpdate", (data: { models: Model[] }) => {
+      setModels(data.models);
+      console.log("Real-time models received:", data.models);
+    });
 
-        // Scene, Camera, Renderer
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x000000);
+    socket.on("aiResponse", (response: AIResponse) => {
+      setAiResponse(response.aiResponse);
+      console.log("AI Response:", response);
+    });
 
-        const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-        camera.position.set(0, 1, 5);
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(container.clientWidth, container.clientHeight);
-        container.appendChild(renderer.domElement);
+  useEffect(() => {
+    if (!containerRef.current) return; // Ensure containerRef.current is defined
 
-        // Light
-        const light = new THREE.DirectionalLight(0xffffff, 1);
-        light.position.set(5, 5, 5).normalize();
-        scene.add(light);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.xr.enabled = true;
+    containerRef.current.appendChild(renderer.domElement);
 
-        // OBJ Loader
-        const loader = new OBJLoader();
-        loader.load(modelPath, (obj) => {
-            scene.add(obj);
-        }, undefined, (error) => {
-            console.error('Error loading model:', error);
-        });
+    // Add AR button
+    document.body.appendChild(ARButton.createButton(renderer));
 
-        // Controls
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
+    // Add lighting
+    const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+    light.position.set(0, 1, 0);
+    scene.add(light);
 
-        // Resize handling
-        const onResize = () => {
-            camera.aspect = container.clientWidth / container.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(container.clientWidth, container.clientHeight);
-        };
+    // Load models into the scene
+    const loader = new GLTFLoader();
+    models.forEach((model) => {
+      loader.load(model.model_file, (gltf) => {
+        const object = gltf.scene;
+        object.position.set(0, 0, -1); // Position in front of the user
+        object.scale.set(0.5, 0.5, 0.5); // Adjust size
+        scene.add(object);
+      });
+    });
 
-        window.addEventListener('resize', onResize);
+    // Animation loop
+    const animate = () => {
+      renderer.setAnimationLoop(() => {
+        renderer.render(scene, camera);
+      });
+    };
+    animate();
 
-        // Animation loop
-        const animate = () => {
-            requestAnimationFrame(animate);
-            controls.update();
-            renderer.render(scene, camera);
-        };
+    return () => {
+      renderer.dispose();
+      while (containerRef.current?.firstChild) {
+        containerRef.current?.removeChild(containerRef.current.firstChild);
+      }
+    };
+  }, [models]);
 
-        animate();
-
-        // Cleanup
-        return () => {
-            window.removeEventListener('resize', onResize);
-            if (container) {
-                container.removeChild(renderer.domElement);
-            }
-        };
-    }, []);
-
-    return <div ref={containerRef} style={{ width: '100%', height: '100vh' }}></div>;
+  return (
+    <div ref={containerRef} style={{ width: "100%", height: "100vh" }}>
+      {aiResponse && <div className="ai-response">{aiResponse}</div>}
+    </div>
+  );
 };
 
-export default Voice;
+export default ARVisualizer;
