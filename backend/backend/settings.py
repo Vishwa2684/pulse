@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from django.core.mail import send_mail
 import rest_framework_simplejwt
 # Load environment variables from .env file
 load_dotenv()
@@ -105,6 +106,16 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+# Email Server Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Gmail SMTP server
+EMAIL_PORT = 587  # Port for TLS
+EMAIL_USE_TLS = True  # Use TLS encryption
+EMAIL_USE_SSL = False  # Do not use SSL when TLS is enabled
+EMAIL_HOST_USER = 'pranay.jumbarthi1905@gmail.com'  # Replace with your Gmail address
+EMAIL_HOST_PASSWORD = 'ngrbjuoennrohdla'  # Replace with your Gmail app password
+DEFAULT_FROM_EMAIL = 'pranay.jumbarthi1905@gmail.com'  # Default sender for emails
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
